@@ -2,89 +2,38 @@
 
     "use strict";
 
-    // No, no! The adventures first; explanations take such a dreadful time.
     $angular.module('ngRangeSlider', []).directive('rangeSlider', ['$window', function ngRangeSlider($window) {
 
         return {
-
-            /**
-             * @property restrict
-             * @type {String}
-             */
             restrict: 'EA',
 
-            /**
-             * @method controller
-             * @param $scope {Object}
-             * @return {void}
-             */
             controller: ['$scope', function controller($scope) {
 
-                /**
-                 * @method iter
-                 * @param max {Number}
-                 * @return {Array}
-                 */
                 $scope.iter = function iter(max) {
-
                     var iterator = [];
-
                     for (var index = 0; index <= max; index++) {
                         iterator.push(index);
                     }
-
                     return iterator;
-
                 };
 
-                /**
-                 * @method _notInRunLoop
-                 * @return {Boolean}
-                 * @private
-                 */
                 $scope._notInRunLoop = function _notInRunLoop() {
                     return !$scope.$root.$$phase;
                 };
 
-                /**
-                 * Determines whether Underscore/Lo-Dash is available, and the `throttle` method is available
-                 * on the object.
-                 *
-                 * @method _supportThrottle
-                 * @return {Boolean}
-                 * @private
-                 */
                 $scope._supportThrottle = function _supportThrottle() {
                     return ($angular.isDefined(_) && typeof _.throttle === 'function');
                 };
 
             }],
 
-            /**
-             * @property template
-             * @type {String}
-             */
             template: '<section><datalist id="numbers"><option ng-repeat="index in iter(max)">{{index}}</option></datalist><input list="numbers" type="range" ng-change="_which = 0" ng-model="_model[0]" min="{{_values.min}}" max="{{_values.max}}" step="{{_step}}" /><input type="range" ng-change="_which = 1" ng-model="_model[1]" min="{{_values.min}}" max="{{_values.max}}" step="{{_step}}" /></section>',
-
-            /**
-             * @property replace
-             * @type {Boolean}
-             */
             replace: true,
-
-            /**
-             * @property require
-             * @type {String}
-             */
             require: 'ngModel',
-
-            /**
-             * @property scope
-             * @type {Object}
-             */
             scope: {
                 model: '=ngModel',
                 throttle: '=',
+                settings: '=',
                 step: '=',
                 round: '=',
                 init: '=',
@@ -92,76 +41,38 @@
                 min: '='
             },
 
-            /**
-             * @method link
-             * @param scope {Object}
-             * @param element {Object}
-             * @return {void}
-             */
             link: function link(scope, element) {
 
-                /**
-                 * @property _model
-                 * @type {Array}
-                 * @private
-                 */
-                //scope._model = [scope.model.from, scope.model.to];
-
-                if ($angular.isArray(scope.model)) {
-
-                    // Developer defined an array.
-                    scope._model = [scope.model[0], scope.model[1]];
-
-                } else if (scope.model && scope.model.from && scope.model.to) {
-
-                    // Otherwise it's an object.
-                    scope._model = [scope.model.from, scope.model.to];
-
+                if (scope.settings) {
+                    scope.step = scope.settings.step;
+                    scope.init = scope.settings.default;
+                    scope.min = scope.settings.min;
+                    scope.max = scope.settings.max;
                 } else {
-
-                    scope._model = [scope.init[0], scope.init[1]];
-
+                    scope._step = scope.step || 1;
                 }
 
-                /**
-                 * @property _values
-                 * @type {Object}
-                 * @private
-                 */
-                scope._values = { min: scope.min || 0, max: scope.max || 100 };
-
-                /**
-                 * @property _step
-                 * @type {Number}
-                 * @private
-                 */
-                scope._step = scope.step || 1;
-
-                /**
-                 * @property _round
-                 * @type {Number}
-                 * @private
-                 */
                 scope._round = scope.round || false;
+                
 
-                /**
-                 * Force the re-evaluation of the input slider values.
-                 *
-                 * @method _reevaluateInputs
-                 * @return {void}
-                 * @private
-                 */
+                if ($angular.isArray(scope.model)) {
+                    scope._model = [scope.model[0], scope.model[1]];
+                } else if (scope.model && scope.model.from && scope.model.to) {
+                    scope._model = [scope.model.from, scope.model.to];
+                } else {
+                    scope._model = [scope.init[0], scope.init[1]];
+                }
+
+                scope._values = { min: scope.min || 0, max: scope.max || 100 };
+                
+
                 var _reevaluateInputs = function _reevaluateInputs() {
 
                     var inputElements = element.find('input');
-
                     $angular.forEach(inputElements, function forEach(inputElement, index) {
-
                         inputElement = $angular.element(inputElement);
-
                         inputElement.val('');
                         inputElement.val(scope._model[index]);
-
                     });
 
                 };
@@ -178,13 +89,7 @@
                     _reevaluateInputs();
                 }, true);
 
-                /**
-                 * Listen for when the min or max are altered.
-                 *
-                 * @method updateMinMax
-                 * @return {void}
-                 * @private
-                 */
+                
                 var updateMinMax = function updateMinMax() {
                     scope._values[this] = scope[this];
                     _reevaluateInputs();
@@ -194,46 +99,20 @@
                 scope.$watch('min', updateMinMax.bind('min'));
                 scope.$watch('max', updateMinMax.bind('max'));
 
-                /**
-                 * Responsible for determining which slider the user was moving, which help us resolve
-                 * occurrences of sliders overlapping.
-                 *
-                 * @property _which
-                 * @type {Number}
-                 * @private
-                 */
                 scope._which = 0;
 
-                /**
-                 * @method _updateModel
-                 * @param model {Object}
-                 * @return {void}
-                 * @private
-                 */
                 var _updateModel = function _updateModel(model) {
 
-                    // Et voila...
-
                     if ($angular.isArray(scope.model)) {
-
-                        // Developer defined an array.
                         scope.model = [model[0], model[1]];
-
                     } else {
-
-                        // Otherwise it's an object.
                         scope.model = { from: model[0], to: model[1] };
-
                     }
 
                     if (scope._notInRunLoop()) {
 
                         try {
-
-                            // Sometimes we're outside of the Angular run-loop, and therefore need to manually
-                            // invoke the `apply` method!
                             scope.$apply();
-
                         } catch(e) {}
 
                     }
