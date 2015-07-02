@@ -1,6 +1,6 @@
 {
   "name": "ng-range-slider",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "homepage": "https://github.com/Wildhoney/ngRangeSlider",
   "authors": [
     "Adam Timberlake <adam.timberlake@gmail.com>"
@@ -23,10 +23,6 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "^1.2",
-    "underscore": "~1.7.0"
-  },
-  "devDependencies": {
-    "angular-mocks": "^1.2"
+    "angular": "^1.3"
   }
 }
