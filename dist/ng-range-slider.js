@@ -86,6 +86,7 @@
                 model: '=ngModel',
                 throttle: '=',
                 step: '=',
+                round: '=',
                 init: '=',
                 max: '=',
                 min: '='
@@ -135,6 +136,13 @@
                  * @private
                  */
                 scope._step = scope.step || 1;
+
+                /**
+                 * @property _round
+                 * @type {Number}
+                 * @private
+                 */
+                scope._round = scope.round || false;
 
                 /**
                  * Force the re-evaluation of the input slider values.
@@ -246,8 +254,10 @@
                     scope._model[0] = $window.parseFloat(scope._model[0]);
                     scope._model[1] = $window.parseFloat(scope._model[1]);
 
-                    console.log(scope._model);
-                    console.log(scope);
+                    if (scope._round) {
+                        scope._model[0] = Math.round(scope._model[0]);
+                        scope._model[1] = Math.round(scope._model[1]);                        
+                    }
 
                     // User was moving the first slider.
                     if (scope._which === 0 && scope._model[1] < scope._model[0]) {
