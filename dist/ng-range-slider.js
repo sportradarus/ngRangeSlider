@@ -86,6 +86,7 @@
                 model: '=ngModel',
                 throttle: '=',
                 step: '=',
+                init: '=',
                 max: '=',
                 min: '='
             },
@@ -103,7 +104,23 @@
                  * @type {Array}
                  * @private
                  */
-                scope._model = [scope.model.from, scope.model.to];
+                //scope._model = [scope.model.from, scope.model.to];
+
+                if ($angular.isArray(scope.model)) {
+
+                    // Developer defined an array.
+                    scope._model = [scope.model[0], scope.model[1]];
+
+                } else if (scope.model && scope.model.from && scope.model.to) {
+
+                    // Otherwise it's an object.
+                    scope._model = [scope.model.from, scope.model.to];
+
+                } else {
+
+                    scope._model = [scope.init[0], scope.init[1]];
+
+                }
 
                 /**
                  * @property _values
@@ -143,7 +160,13 @@
 
                 // Listen for any changes to the original model.
                 scope.$watch('model', function alteredValues() {
-                    scope._model = [scope.model.from, scope.model.to];
+                    
+                    if ($angular.isArray(scope.model)) {
+                        scope._model = [scope.model[0], scope.model[1]];
+                    } else if (scope.model && scope.model.from && scope.model.to) {
+                        scope._model = [scope.model.from, scope.model.to];
+                    }
+
                     _reevaluateInputs();
                 }, true);
 
@@ -222,6 +245,9 @@
 
                     scope._model[0] = $window.parseFloat(scope._model[0]);
                     scope._model[1] = $window.parseFloat(scope._model[1]);
+
+                    console.log(scope._model);
+                    console.log(scope);
 
                     // User was moving the first slider.
                     if (scope._which === 0 && scope._model[1] < scope._model[0]) {

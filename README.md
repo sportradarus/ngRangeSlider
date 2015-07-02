@@ -1,6 +1,10 @@
 ngRangeSlider
 ===================
 
+###Updated ngRangeSlider to handle our custom use cases.
+
+
+
 ![Travis](http://img.shields.io/travis/Wildhoney/ngRangeSlider.svg?style=flat)
 &nbsp;
 ![npm](http://img.shields.io/npm/v/ng-range-slider.svg?style=flat)
