@@ -3,16 +3,6 @@ ngRangeSlider
 
 ###Updated ngRangeSlider to handle our custom use cases.
 
-
-
-![Travis](http://img.shields.io/travis/Wildhoney/ngRangeSlider.svg?style=flat)
-&nbsp;
-![npm](http://img.shields.io/npm/v/ng-range-slider.svg?style=flat)
-&nbsp;
-![License MIT](http://img.shields.io/badge/License-MIT-lightgrey.svg?style=flat)
-&nbsp;
-![Experimental](http://img.shields.io/badge/%20!%20%20-experimental-blue.svg?style=flat)
-
 * **Heroku**: [http://ng-range-slider.herokuapp.com/](http://ng-range-slider.herokuapp.com/)
 * **Bower:** `bower install ng-range-slider`
 
